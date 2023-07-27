@@ -1,4 +1,4 @@
-const API_KEY = "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"
+const API_KEY = ""
 
 const submitIcon = document.querySelector("#submit-icon")
 const inputElement = document.querySelector("input")
