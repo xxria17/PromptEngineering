@@ -1,2 +1,3 @@
-# PromptEngineering
-With ChatGPT
+# PromptEngineering 
+With OpenAI
+-> https://platform.openai.com
