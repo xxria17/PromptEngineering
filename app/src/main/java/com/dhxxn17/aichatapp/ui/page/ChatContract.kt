@@ -14,11 +14,14 @@ class ChatContract {
     ): BaseUiState
 
     sealed class ChatUiAction: BaseUiAction {
+        /* 메시지 입력 */
         data class InputMessage(val message: String): ChatUiAction()
 
+        /* 메시지 전송 */
         object RequestMessage: ChatUiAction()
 
-        object BackToList: ChatUiAction()
+        /* 메시지 이력 삭제 */
+        object ClearData: ChatUiAction()
     }
 
     sealed class ChatUiEffect: BaseUiEffect {

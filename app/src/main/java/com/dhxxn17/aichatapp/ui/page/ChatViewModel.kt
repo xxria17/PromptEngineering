@@ -39,9 +39,14 @@ class ChatViewModel @Inject constructor(
             is ChatContract.ChatUiAction.InputMessage -> {
                 state.myInput.sendState { action.message }
             }
+
             is ChatContract.ChatUiAction.RequestMessage -> {
                 requestChat(state.myInput.value())
                 state.myInput.sendState { "" }
+            }
+
+            is ChatContract.ChatUiAction.ClearData -> {
+                state.chatList.sendState { emptyList() }
             }
         }
     }
@@ -58,6 +63,9 @@ class ChatViewModel @Inject constructor(
             role = "user",
             content = message
         )
+        val tempList = state.chatList.value().toMutableList()
+        tempList.add(Pair(message, ". . ."))
+        state.chatList.sendState { tempList }
 
         viewModelScope.launch {
             val response = chatRepository.fetchChat(content)
@@ -68,6 +76,7 @@ class ChatViewModel @Inject constructor(
                         response.body.choices[0].messages.content
                     )
                     val copyList = state.chatList.value().toMutableList()
+                    copyList.removeAt(state.chatList.value().size - 1)
                     copyList.add(pair)
                     state.chatList.sendState { copyList }
                 }
