@@ -1,5 +1,6 @@
-package com.dhxxn17.aichatapp.ui.page
+package com.dhxxn17.aichatapp.ui.page.chat
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -43,14 +46,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.dhxxn17.aichatapp.R
+import com.dhxxn17.aichatapp.data.entity.ChatData
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen() {
+fun ChatScreen(
+    navController: NavController,
+    data: ChatData
+) {
     val viewModel: ChatViewModel = hiltViewModel()
     var isShowDialog by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+
+    Effect(viewModel)
 
     if (isShowDialog) {
         AlertDialog(
@@ -66,6 +78,7 @@ fun ChatScreen() {
                     onClick = {
                         viewModel.sendAction(ChatContract.ChatUiAction.ClearData)
                         isShowDialog = false
+                        navController.popBackStack()
                     }
                 ) {
                     Text("삭제")
@@ -101,7 +114,9 @@ fun ChatScreen() {
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 30.dp).weight(1f)
+                modifier = Modifier
+                    .padding(start = 30.dp)
+                    .weight(1f)
             )
 
             Image(
@@ -114,6 +129,7 @@ fun ChatScreen() {
                     }
             )
         }
+
         LazyColumn(
             modifier = Modifier
                 .padding(vertical = 60.dp)
@@ -221,10 +237,12 @@ fun MyChatItem(
         modifier = Modifier
             .padding(10.dp)
             .background(
-                brush = Brush.verticalGradient(listOf(
-                    Color(0xffF54EA2),
-                    Color(0xffFF7676)
-                )), shape = RoundedCornerShape(
+                brush = Brush.verticalGradient(
+                    listOf(
+                        Color(0xffF54EA2),
+                        Color(0xffFF7676)
+                    )
+                ), shape = RoundedCornerShape(
                     topStart = 30.dp, topEnd = 30.dp, bottomStart = 30.dp
                 )
             )
@@ -235,5 +253,20 @@ fun MyChatItem(
             fontSize = 16.sp,
             color = Color.White
         )
+    }
+}
+
+@Composable
+fun Effect(viewModel: ChatViewModel) {
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel.effect) {
+        viewModel.effect.onEach { _effect ->
+            when (_effect) {
+                is ChatContract.ChatUiEffect.ShowToast -> {
+                    Toast.makeText(context, _effect.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.collect()
     }
 }

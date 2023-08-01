@@ -1,4 +1,4 @@
-package com.dhxxn17.aichatapp.ui.page
+package com.dhxxn17.aichatapp.ui.page.chat
 
 import com.dhxxn17.aichatapp.ui.base.BaseUiAction
 import com.dhxxn17.aichatapp.ui.base.BaseUiEffect

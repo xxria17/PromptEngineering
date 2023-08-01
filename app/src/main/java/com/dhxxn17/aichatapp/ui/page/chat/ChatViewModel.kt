@@ -1,4 +1,4 @@
-package com.dhxxn17.aichatapp.ui.page
+package com.dhxxn17.aichatapp.ui.page.chat
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
@@ -9,16 +9,20 @@ import com.dhxxn17.aichatapp.ui.base.BaseUiAction
 import com.dhxxn17.aichatapp.ui.base.BaseUiState
 import com.dhxxn17.aichatapp.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository
 ): BaseViewModel() {
 
     val state: ChatContract.ChatUiState
         get() = state()
+
+    val effect: Flow<ChatContract.ChatUiEffect>
+        get() = effect()
 
     init {
         initialData()
@@ -79,6 +83,7 @@ class ChatViewModel @Inject constructor(
                     copyList.removeAt(state.chatList.value().size - 1)
                     copyList.add(pair)
                     state.chatList.sendState { copyList }
+
                 }
                 is NetworkResponse.ApiError -> {
                     sendEffect(ChatContract.ChatUiEffect.ShowToast("${response.body.message}"))
