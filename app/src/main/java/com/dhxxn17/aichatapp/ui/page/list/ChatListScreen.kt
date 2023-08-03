@@ -1,9 +1,13 @@
 package com.dhxxn17.aichatapp.ui.page.list
 
-import android.util.Log
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,17 +15,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +51,9 @@ fun ChatListScreen(navController: NavController) {
     val viewModel : ChatListViewModel = hiltViewModel()
     val state = viewModel.state
     val lifecycleOwner = LocalLifecycleOwner.current
+    var isShowDialog by remember  { mutableStateOf(false) }
+    var selectedId by remember { mutableStateOf(0) }
+    val context = LocalContext.current
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, _event ->
@@ -62,8 +79,19 @@ fun ChatListScreen(navController: NavController) {
             .background(Color.White)
             .padding(10.dp)
     ) {
+        Text(
+            text = "AI Chat",
+            fontSize = 18.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+        )
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 40.dp)
         ) {
 
             state.chatList.getValue(this).let { _chatList ->
@@ -84,15 +112,30 @@ fun ChatListScreen(navController: NavController) {
                         }
                     }
                 } else {
-                    _chatList.forEach { _data ->
+                    _chatList.forEachIndexed { _index, _data ->
                         item {
                             ListItem(
                                 title = _data.title,
-                                onClick = {
+                                onTap = {
                                     navController.currentBackStackEntry?.savedStateHandle?.set(key = "historyId", value = _data.id)
                                     navController.navigate(Screens.ChatScreen.route)
+                                },
+                                onLongPress = {
+                                    longPressHaptic(context)
+                                    isShowDialog = true
+                                    selectedId = _data.id
                                 }
                             )
+                        }
+
+                        if (_index < _chatList.size - 1) {
+                            item {
+                                Divider(
+                                    color = Color.LightGray,
+                                    modifier = Modifier.padding(horizontal = 10.dp),
+                                    thickness = 1.dp
+                                )
+                            }
                         }
                     }
                 }
@@ -103,7 +146,10 @@ fun ChatListScreen(navController: NavController) {
             modifier = Modifier
                 .padding(end = 10.dp, bottom = 20.dp)
                 .clickable {
-                    navController.currentBackStackEntry?.savedStateHandle?.set(key = "historyId", value = 0)
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        key = "historyId",
+                        value = 0
+                    )
                     navController.navigate(Screens.ChatScreen.route)
                 }
                 .background(
@@ -126,28 +172,77 @@ fun ChatListScreen(navController: NavController) {
             )
         }
     }
+
+    if (isShowDialog) {
+        AlertDialog(
+            onDismissRequest = { isShowDialog = false },
+            text = {
+                Text(text = "해당 대화를 삭제하시겠습니까?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.sendAction(ChatListContract.ChatListUiAction.DeleteChatData(selectedId))
+                        isShowDialog = false
+                        selectedId = 0
+                    }
+                ) {
+                    Text("삭제")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        isShowDialog = false
+                        selectedId = 0
+                    }
+                ) {
+                    Text("취소")
+                }
+            }
+        )
+    }
 }
 
 @Composable
 private fun ListItem(
     title: String,
-    onClick: () -> Unit
+    onTap: () -> Unit,
+    onLongPress: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(15.dp)
-            .clickable {
-                onClick.invoke()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = {
+                        onLongPress.invoke()
+                    },
+                    onTap = {
+                        onTap.invoke()
+                    }
+                )
             }
+            .padding(15.dp)
     ) {
         Text(
             text = title,
             fontSize = 16.sp,
-            color = Color(0xff616771),
+            color = Color.Black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+    }
+}
+
+private fun longPressHaptic(context: Context) {
+    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val vibration = VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK)
+        vibrator.vibrate(vibration)
+    } else {
+        vibrator.vibrate(100L)
     }
 }

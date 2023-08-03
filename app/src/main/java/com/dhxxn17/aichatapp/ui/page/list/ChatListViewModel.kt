@@ -36,6 +36,9 @@ class ChatListViewModel @Inject constructor(
             repository.deleteMessagesByChatDataId(id)
 
             sendEffect(ChatListContract.ChatListUiEffect.ShowToast("삭제되었습니다."))
+
+            initialData()
+            loadData()
         }
     }
 

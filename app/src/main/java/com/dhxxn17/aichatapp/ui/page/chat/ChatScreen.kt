@@ -61,7 +61,6 @@ fun ChatScreen(
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
 
-    Log.d("!!!!!!!!", "ChatScreen :${id}")
     if (id != 0) {
         viewModel.requestHistory(id)
     }
