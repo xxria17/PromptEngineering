@@ -5,8 +5,8 @@ sealed class Screens(
     val route: String
 ) {
     object ChatScreen: Screens("chat_screen/{$ID_ARGS}") {
-        fun withId(id: Long): String {
-            return this.route.replace(ID_ARGS, "$id")
+        fun withId(id: String): String {
+            return this.route.replace(ID_ARGS, id)
         }
     }
 

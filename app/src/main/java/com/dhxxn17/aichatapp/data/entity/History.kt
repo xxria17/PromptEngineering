@@ -4,10 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "chat_table")
-data class ChatData(
+/* 내부 저장 데이터 */
+@Entity(tableName = "history_table")
+data class History(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
+    val id: Int = 0,
     @ColumnInfo(name = "chat_title")
-    val title: String
+    val title: String,
 )

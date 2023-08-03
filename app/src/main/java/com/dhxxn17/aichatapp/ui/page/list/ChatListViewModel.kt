@@ -1,7 +1,6 @@
 package com.dhxxn17.aichatapp.ui.page.list
 
 import androidx.lifecycle.viewModelScope
-import com.dhxxn17.aichatapp.data.entity.ChatData
 import com.dhxxn17.aichatapp.data.repository.ChatRepository
 import com.dhxxn17.aichatapp.ui.base.BaseUiAction
 import com.dhxxn17.aichatapp.ui.base.BaseUiState
@@ -24,17 +23,17 @@ class ChatListViewModel @Inject constructor(
 
     private fun requestChatList() {
         viewModelScope.launch {
-            val chatList = repository.requestChatList().toMutableList()
+            val chatList = repository.getHistoryList()
             state.chatList.sendState {
                chatList
             }
         }
     }
 
-    private fun deleteChatData(data: ChatData) {
+    private fun deleteChatData(id: Int) {
         viewModelScope.launch {
-            repository.deleteChatData(data.id)
-            repository.deleteMessagesByChatDataId(data.id)
+            repository.deleteChatData(id)
+            repository.deleteMessagesByChatDataId(id)
 
             sendEffect(ChatListContract.ChatListUiEffect.ShowToast("삭제되었습니다."))
         }
@@ -46,8 +45,8 @@ class ChatListViewModel @Inject constructor(
 
     override fun handleEvents(action: BaseUiAction) {
         when(action) {
-            is ChatListContract.ChatListUiAction.deleteChatData -> {
-                deleteChatData(action.data)
+            is ChatListContract.ChatListUiAction.DeleteChatData -> {
+                deleteChatData(action.id)
             }
         }
     }

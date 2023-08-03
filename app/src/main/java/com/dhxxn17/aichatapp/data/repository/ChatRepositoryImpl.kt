@@ -1,56 +1,51 @@
 package com.dhxxn17.aichatapp.data.repository
 
-import com.dhxxn17.aichatapp.data.entity.ChatData
-import com.dhxxn17.aichatapp.data.entity.ChatDataWithMessages
+import com.dhxxn17.aichatapp.data.entity.Chat
 import com.dhxxn17.aichatapp.data.entity.ErrorResponse
-import com.dhxxn17.aichatapp.data.entity.Messages
+import com.dhxxn17.aichatapp.data.entity.History
+import com.dhxxn17.aichatapp.data.entity.Message
 import com.dhxxn17.aichatapp.data.entity.RequestBody
 import com.dhxxn17.aichatapp.data.entity.ResponseData
-import com.dhxxn17.aichatapp.data.local.ChatDao
+import com.dhxxn17.aichatapp.data.local.HistoryDao
+import com.dhxxn17.aichatapp.data.local.MessageDao
 import com.dhxxn17.aichatapp.data.remote.ApiService
 import com.dhxxn17.aichatapp.data.remote.NetworkResponse
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
-    private val dao: ChatDao
+    private val historyDao: HistoryDao,
+    private val messageDao: MessageDao
 ): ChatRepository {
-    override suspend fun fetchChat(messages: Messages): NetworkResponse<ResponseData, ErrorResponse> {
-        return apiService.fetchChat(
-            body = RequestBody(
-                messages = arrayListOf(messages)
-            )
-        )
+
+    override suspend fun sendChat(chat: List<Chat>): NetworkResponse<ResponseData, ErrorResponse> {
+        return apiService.sendChat(body = RequestBody(
+            messages = chat
+        ))
     }
 
-    override suspend fun requestChatList(): List<ChatData> {
-        return dao.getChatList()
+    override suspend fun getHistoryList(): List<History> {
+        return historyDao.getAllHistories()
     }
 
-    override suspend fun requestChatHistory(id: Long): ChatDataWithMessages {
-        return dao.getChatHistory(id)
+    override suspend fun getMessageList(id: Int): List<Message> {
+        return messageDao.getMessageByHistoryId(id)
     }
 
-    override suspend fun saveChatData(data: ChatData) {
-        return dao.saveChat(data)
+    override suspend fun saveChatData(data: History) {
+        return historyDao.insertHistory(data)
     }
 
-    override suspend fun saveMessage(data: List<Messages>) {
-        return dao.saveMessages(data)
+    override suspend fun saveMessage(data: Message) {
+        return messageDao.insertMessage(data)
     }
 
-    override suspend fun deleteChatData(id: Long) {
-        return dao.deleteChatData(id)
+    override suspend fun deleteChatData(id: Int) {
+        return historyDao.deleteHistory(id)
     }
 
-    override suspend fun deleteMessagesByChatDataId(id: Long) {
-        return dao.deleteMessagesByChatDataID(id)
+    override suspend fun deleteMessagesByChatDataId(id: Int) {
+        return messageDao.deleteMessagesByChatDataID(id)
     }
 
-
-    override suspend fun updateMessages(data: List<Messages>) {
-        return dao.updateMessageData(data)
-    }
 }

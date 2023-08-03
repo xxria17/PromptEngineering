@@ -19,7 +19,7 @@ data class ResponseData(
 data class Choice(
     val index: Int,
     @SerializedName("message")
-    val messages: Messages,
+    val messages: Chat,
     @SerializedName("finish_reason")
     val isFinish: String
 )

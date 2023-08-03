@@ -2,9 +2,10 @@ package com.dhxxn17.aichatapp.ui.page.chat
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.dhxxn17.aichatapp.data.entity.ChatData
-import com.dhxxn17.aichatapp.data.entity.Messages
+import com.dhxxn17.aichatapp.data.entity.Chat
+import com.dhxxn17.aichatapp.data.entity.History
+import com.dhxxn17.aichatapp.data.entity.Message
+import com.dhxxn17.aichatapp.data.entity.ROLE
 import com.dhxxn17.aichatapp.data.remote.NetworkResponse
 import com.dhxxn17.aichatapp.data.repository.ChatRepository
 import com.dhxxn17.aichatapp.ui.base.BaseUiAction
@@ -60,69 +61,81 @@ class ChatViewModel @Inject constructor(
     override fun initialState(): BaseUiState {
         return ChatContract.ChatUiState(
             myInput = mutableChatStateOf(""),
-            chatList = mutableChatStateListOf(emptyList()),
-            chatID = mutableChatStateOf(0L)
+            messageList = mutableChatStateListOf(emptyList()),
+            historyId = mutableChatStateOf(-1),
+            chatList = mutableChatStateListOf(emptyList())
         )
     }
 
-    fun requestHistory(id: Long) {
+    fun requestHistory(id: Int) {
         viewModelScope.launch {
-            val response = chatRepository.requestChatHistory(id)
+            val messageList = chatRepository.getMessageList(id)
 
-            state.chatID.sendState { id }
-            state.chatList.sendState { response.messages }
+            state.historyId.sendState { id }
+            state.messageList.sendState { messageList }
         }
     }
 
     private fun requestChat(message: String) {
         viewModelScope.launch {
 
-            if (state.chatID.value() == 0L) {
+            if (state.historyId.value() == Int.MAX_VALUE) {
                 /* 첫 생성일 경우 */
-                val chatData = ChatData(title = message)
+                val chatData = History(title = message)
                 chatRepository.saveChatData(chatData)
 
-                state.chatID.sendState { chatData.id }
+                state.historyId.sendState { chatData.id }
             }
 
-            val content = Messages(
-                role = "user",
+            val userMessageData = Message(
+                role = ROLE.USER.text,
                 content = message,
-                chatDataId = state.chatID.value()
+                historyId = state.historyId.value()
             )
 
             // ai response를 받기 전까지 임시로 보여줄 대화
-            val loadingContent = Messages(
-                role = "assistant",
+            val loadingMessageData = Message(
+                role = ROLE.ASSISTANT.text,
                 content = ". . .",
-                chatDataId = state.chatID.value()
+                historyId = state.historyId.value()
             )
 
-            val tempList = state.chatList.value().toMutableList()
-            tempList.add(content)
-            tempList.add(loadingContent)
-            state.chatList.sendState { tempList }
+            val userChatData = Chat(
+                role = ROLE.USER.text,
+                content = message
+            )
 
-            val response = chatRepository.fetchChat(content)
+            val tempList = state.messageList.value().toMutableList()
+            tempList.add(userMessageData)
+            tempList.add(loadingMessageData)
+            state.messageList.sendState { tempList }
+
+            val response = chatRepository.sendChat(listOf(userChatData))
             when (response) {
                 is NetworkResponse.Success -> {
-                    val reply = Messages(
-                        role = "assistant",
-                        content = response.body.choices[0].messages.content,
-                        chatDataId = state.chatID.value()
+                    val reply = response.body.choices[0].messages.content
+                    val replyMessage = Message(
+                        role = ROLE.ASSISTANT.text,
+                        content = reply,
+                        historyId = state.historyId.value()
                     )
-                    val copyList = state.chatList.value().toMutableList()
-                    copyList.removeAt(state.chatList.value().size - 1)
-                    copyList.add(reply)
-                    state.chatList.sendState { copyList }
+                    val replyChat = Chat(
+                        role = ROLE.ASSISTANT.text,
+                        content = reply
+                    )
+                    val copyList = state.messageList.value().toMutableList()
+                    copyList.removeAt(state.messageList.value().size - 1)
+                    copyList.add(replyMessage)
+
+                    state.messageList.sendState { copyList }
 
                     // 내부 db에 저장
-                    if (state.chatList.value().size < 3) {
-                        // 대화 초기 생성
-                        chatRepository.saveMessage(state.chatList.value())
-                    } else {
-                        chatRepository.updateMessages(state.chatList.value())
-                    }
+                    chatRepository.saveMessage(userMessageData)
+                    chatRepository.saveMessage(replyMessage)
+
+                    val chatList = listOf<Chat>(userChatData, replyChat)
+                    state.chatList.sendState { chatList }
+
                 }
                 is NetworkResponse.ApiError -> {
                     sendEffect(ChatContract.ChatUiEffect.ShowToast("${response.body.message}"))
@@ -139,14 +152,14 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun deleteChat() {
-        state.chatList.sendState { emptyList() }
-        val chatId = state.chatID.value()
+        state.messageList.sendState { emptyList() }
+        val chatId = state.historyId.value()
 
         viewModelScope.launch {
             chatRepository.deleteChatData(chatId)
             chatRepository.deleteMessagesByChatDataId(chatId)
 
-            state.chatID.sendState { 0L }
+            state.historyId.sendState { -1 }
             sendEffect(ChatContract.ChatUiEffect.ShowToast("삭제되었습니다."))
         }
     }

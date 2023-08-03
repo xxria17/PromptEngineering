@@ -1,6 +1,7 @@
 package com.dhxxn17.aichatapp.ui.page.chat
 
-import com.dhxxn17.aichatapp.data.entity.Messages
+import com.dhxxn17.aichatapp.data.entity.Chat
+import com.dhxxn17.aichatapp.data.entity.Message
 import com.dhxxn17.aichatapp.ui.base.BaseUiAction
 import com.dhxxn17.aichatapp.ui.base.BaseUiEffect
 import com.dhxxn17.aichatapp.ui.base.BaseUiState
@@ -10,9 +11,10 @@ import com.dhxxn17.aichatapp.ui.base.ChatStateList
 class ChatContract {
 
     data class ChatUiState(
-        val chatList: ChatStateList<Messages>,
+        val messageList: ChatStateList<Message>,  // 화면에 노출할 리스트
+        val chatList: ChatStateList<Chat>, // 통신에 전달할 리스트
         val myInput: ChatState<String>,
-        val chatID: ChatState<Long>
+        val historyId: ChatState<Int>
     ): BaseUiState
 
     sealed class ChatUiAction: BaseUiAction {

@@ -1,17 +1,17 @@
 package com.dhxxn17.aichatapp.data
 
 import androidx.room.TypeConverter
-import com.dhxxn17.aichatapp.data.entity.Messages
+import com.dhxxn17.aichatapp.data.entity.Message
 import com.google.gson.Gson
 
 class ChatListConverters {
     @TypeConverter
-    fun listToJson(value: List<Messages>): String? {
+    fun listToJson(value: List<Message>): String? {
         return Gson().toJson(value)
     }
 
     @TypeConverter
-    fun jsonToList(value: String): List<Messages>? {
-        return Gson().fromJson(value, Array<Messages>::class.java)?.toList()
+    fun jsonToList(value: String): List<Message>? {
+        return Gson().fromJson(value, Array<Message>::class.java)?.toList()
     }
 }

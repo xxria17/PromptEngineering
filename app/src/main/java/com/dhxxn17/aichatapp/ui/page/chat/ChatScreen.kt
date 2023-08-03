@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.aichatapp.R
-import com.dhxxn17.aichatapp.data.entity.ChatData
+import com.dhxxn17.aichatapp.data.entity.ROLE
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
@@ -60,8 +60,8 @@ fun ChatScreen(
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
 
-    if (id.toLongOrNull() != 0L) {
-        id.toLongOrNull()?.let { viewModel.requestHistory(it) }
+    if (id != "${Int.MAX_VALUE}") {
+        id.toIntOrNull()?.let { viewModel.requestHistory(it) }
     }
 
     var isShowDialog by remember { mutableStateOf(false) }
@@ -143,9 +143,9 @@ fun ChatScreen(
                 .padding(10.dp)
                 .align(Alignment.BottomCenter)
         ) {
-            viewModel.state.chatList.getValue(this).forEach { _chat ->
+            viewModel.state.messageList.getValue(this).forEach { _chat ->
 
-                if (_chat.role == "user") {
+                if (_chat.role == ROLE.USER.text) {
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),

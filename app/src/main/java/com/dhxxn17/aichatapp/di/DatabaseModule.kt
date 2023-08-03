@@ -4,7 +4,8 @@ import android.app.Application
 import androidx.room.Room
 import com.dhxxn17.aichatapp.data.local.AppDatabase
 import com.dhxxn17.aichatapp.data.local.AppDatabase.Companion.DB_NAME
-import com.dhxxn17.aichatapp.data.local.ChatDao
+import com.dhxxn17.aichatapp.data.local.HistoryDao
+import com.dhxxn17.aichatapp.data.local.MessageDao
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -36,5 +37,9 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideChat(appDatabase: AppDatabase): ChatDao = appDatabase.chatDao()
+    fun provideHistory(appDatabase: AppDatabase): HistoryDao = appDatabase.historyDao()
+
+    @Provides
+    @Singleton
+    fun provideMessage(appDatabase: AppDatabase): MessageDao = appDatabase.messageDao()
 }

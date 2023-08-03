@@ -46,7 +46,8 @@ fun ChatListScreen(navController: NavController) {
                 if (_chatList.isEmpty()) {
                     item {
                         Box(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
                                 .padding(top = 350.dp),
                             contentAlignment = Alignment.Center
                         ) {
@@ -63,7 +64,7 @@ fun ChatListScreen(navController: NavController) {
                         item {
                             ListItem(title = _data.title, onClick = {
                                 navController.navigate(Screens.ChatScreen.withId(
-                                    _data.id
+                                   "${_data.id}"
                                 ))
                             })
                         }
@@ -76,9 +77,7 @@ fun ChatListScreen(navController: NavController) {
             modifier = Modifier
                 .padding(end = 10.dp, bottom = 20.dp)
                 .clickable {
-                    navController.navigate(Screens.ChatScreen.withId(
-                        0L
-                    ))
+                    navController.navigate(Screens.ChatScreen.withId("${Int.MAX_VALUE}"))
                 }
                 .background(
                     brush = Brush.verticalGradient(
