@@ -226,7 +226,7 @@ fun AiChatItem(
             .padding(10.dp)
             .background(
                 color = Color(0xffE9EBEE), shape = RoundedCornerShape(
-                    bottomEnd = 30.dp, topEnd = 30.dp, bottomStart = 30.dp
+                    bottomEnd = 30.dp, topEnd = 30.dp, topStart = 30.dp
                 )
             )
             .padding(10.dp)
