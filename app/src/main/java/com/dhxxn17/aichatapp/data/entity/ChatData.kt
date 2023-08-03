@@ -9,7 +9,5 @@ data class ChatData(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
     @ColumnInfo(name = "chat_title")
-    val title: String,
-    @ColumnInfo(name = "chat_list")
-    val chatList: List<Messages>
+    val title: String
 )

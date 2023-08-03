@@ -1,5 +1,6 @@
 package com.dhxxn17.aichatapp.ui.page.chat
 
+import com.dhxxn17.aichatapp.data.entity.Messages
 import com.dhxxn17.aichatapp.ui.base.BaseUiAction
 import com.dhxxn17.aichatapp.ui.base.BaseUiEffect
 import com.dhxxn17.aichatapp.ui.base.BaseUiState
@@ -9,8 +10,9 @@ import com.dhxxn17.aichatapp.ui.base.ChatStateList
 class ChatContract {
 
     data class ChatUiState(
-        val chatList: ChatStateList<Pair<String, String>>,
-        val myInput: ChatState<String>
+        val chatList: ChatStateList<Messages>,
+        val myInput: ChatState<String>,
+        val chatID: ChatState<Long>
     ): BaseUiState
 
     sealed class ChatUiAction: BaseUiAction {

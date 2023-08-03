@@ -33,7 +33,8 @@ class ChatListViewModel @Inject constructor(
 
     private fun deleteChatData(data: ChatData) {
         viewModelScope.launch {
-            repository.deleteChatData(data)
+            repository.deleteChatData(data.id)
+            repository.deleteMessagesByChatDataId(data.id)
 
             sendEffect(ChatListContract.ChatListUiEffect.ShowToast("삭제되었습니다."))
         }

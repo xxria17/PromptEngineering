@@ -56,9 +56,14 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun ChatScreen(
     navController: NavController,
-    data: ChatData
+    id: String
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
+
+    if (id.toLongOrNull() != 0L) {
+        id.toLongOrNull()?.let { viewModel.requestHistory(it) }
+    }
+
     var isShowDialog by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
@@ -139,23 +144,27 @@ fun ChatScreen(
                 .align(Alignment.BottomCenter)
         ) {
             viewModel.state.chatList.getValue(this).forEach { _chat ->
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        MyChatItem(message = _chat.first)
+
+                if (_chat.role == "user") {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            MyChatItem(message = _chat.content)
+                        }
+                    }
+                } else {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            AiChatItem(message = _chat.content)
+                        }
                     }
                 }
 
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        AiChatItem(message = _chat.second)
-                    }
-                }
             }
         }
 

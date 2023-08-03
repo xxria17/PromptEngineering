@@ -1,6 +1,7 @@
 package com.dhxxn17.aichatapp.data.repository
 
 import com.dhxxn17.aichatapp.data.entity.ChatData
+import com.dhxxn17.aichatapp.data.entity.ChatDataWithMessages
 import com.dhxxn17.aichatapp.data.entity.ErrorResponse
 import com.dhxxn17.aichatapp.data.entity.Messages
 import com.dhxxn17.aichatapp.data.entity.RequestBody
@@ -28,11 +29,28 @@ class ChatRepositoryImpl @Inject constructor(
         return dao.getChatList()
     }
 
+    override suspend fun requestChatHistory(id: Long): ChatDataWithMessages {
+        return dao.getChatHistory(id)
+    }
+
     override suspend fun saveChatData(data: ChatData) {
         return dao.saveChat(data)
     }
 
-    override suspend fun deleteChatData(data: ChatData) {
-        return dao.delete(data)
+    override suspend fun saveMessage(data: List<Messages>) {
+        return dao.saveMessages(data)
+    }
+
+    override suspend fun deleteChatData(id: Long) {
+        return dao.deleteChatData(id)
+    }
+
+    override suspend fun deleteMessagesByChatDataId(id: Long) {
+        return dao.deleteMessagesByChatDataID(id)
+    }
+
+
+    override suspend fun updateMessages(data: List<Messages>) {
+        return dao.updateMessageData(data)
     }
 }
