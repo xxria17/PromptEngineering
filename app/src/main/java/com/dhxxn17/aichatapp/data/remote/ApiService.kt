@@ -10,7 +10,7 @@ import retrofit2.http.POST
 interface ApiService {
 
     @POST("v1/chat/completions")
-    suspend fun fetchChat(
+    suspend fun sendChat(
         @Header("Authorization") apiKey: String = "",
         @Header("Content-Type") contentType: String = "application/json",
         @Body body: RequestBody

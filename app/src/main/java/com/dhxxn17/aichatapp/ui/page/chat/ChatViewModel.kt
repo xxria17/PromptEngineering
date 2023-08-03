@@ -110,7 +110,10 @@ class ChatViewModel @Inject constructor(
             tempList.add(loadingMessageData)
             state.messageList.sendState { tempList }
 
-            val response = chatRepository.sendChat(listOf(userChatData))
+            val tempChatList = state.chatList.value().toMutableList()
+            tempChatList.add(userChatData)
+
+            val response = chatRepository.sendChat(tempChatList)
             when (response) {
                 is NetworkResponse.Success -> {
                     val reply = response.body.choices[0].messages.content
