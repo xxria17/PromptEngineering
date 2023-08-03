@@ -6,6 +6,7 @@ import com.dhxxn17.aichatapp.ui.base.BaseUiAction
 import com.dhxxn17.aichatapp.ui.base.BaseUiState
 import com.dhxxn17.aichatapp.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,6 +17,9 @@ class ChatListViewModel @Inject constructor(
 
     val state: ChatListContract.ChatListUiState
         get() = state()
+
+    val effect: Flow<ChatListContract.ChatListUiEffect>
+        get() = effect()
 
     override fun loadData() {
         requestChatList()

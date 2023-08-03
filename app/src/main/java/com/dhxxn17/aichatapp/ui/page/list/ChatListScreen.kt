@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +47,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.dhxxn17.aichatapp.R
 import com.dhxxn17.aichatapp.ui.page.Screens
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun ChatListScreen(navController: NavController) {
@@ -72,6 +76,8 @@ fun ChatListScreen(navController: NavController) {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
+
+    Effect(viewModel)
 
     Box(
         modifier = Modifier
@@ -244,5 +250,20 @@ private fun longPressHaptic(context: Context) {
         vibrator.vibrate(vibration)
     } else {
         vibrator.vibrate(100L)
+    }
+}
+
+@Composable
+private fun Effect(viewModel: ChatListViewModel) {
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel.effect) {
+        viewModel.effect.onEach {
+            when (it) {
+                is ChatListContract.ChatListUiEffect.ShowToast -> {
+                   Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.collect()
     }
 }
