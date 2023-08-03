@@ -1,5 +1,6 @@
 package com.dhxxn17.aichatapp.ui.page.list
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,17 +13,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.dhxxn17.aichatapp.R
 import com.dhxxn17.aichatapp.ui.page.Screens
@@ -31,6 +36,25 @@ import com.dhxxn17.aichatapp.ui.page.Screens
 fun ChatListScreen(navController: NavController) {
     val viewModel : ChatListViewModel = hiltViewModel()
     val state = viewModel.state
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, _event ->
+            when(_event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    // 화면 진입시마다 데이터 불러오기
+                    viewModel.sendAction(ChatListContract.ChatListUiAction.Refresh)
+                }
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -62,11 +86,13 @@ fun ChatListScreen(navController: NavController) {
                 } else {
                     _chatList.forEach { _data ->
                         item {
-                            ListItem(title = _data.title, onClick = {
-                                navController.navigate(Screens.ChatScreen.withId(
-                                   "${_data.id}"
-                                ))
-                            })
+                            ListItem(
+                                title = _data.title,
+                                onClick = {
+                                    navController.currentBackStackEntry?.savedStateHandle?.set(key = "historyId", value = _data.id)
+                                    navController.navigate(Screens.ChatScreen.route)
+                                }
+                            )
                         }
                     }
                 }
@@ -77,7 +103,8 @@ fun ChatListScreen(navController: NavController) {
             modifier = Modifier
                 .padding(end = 10.dp, bottom = 20.dp)
                 .clickable {
-                    navController.navigate(Screens.ChatScreen.withId("${Int.MAX_VALUE}"))
+                    navController.currentBackStackEntry?.savedStateHandle?.set(key = "historyId", value = 0)
+                    navController.navigate(Screens.ChatScreen.route)
                 }
                 .background(
                     brush = Brush.verticalGradient(

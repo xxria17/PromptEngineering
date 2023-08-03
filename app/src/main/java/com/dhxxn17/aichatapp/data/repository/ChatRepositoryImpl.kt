@@ -32,7 +32,7 @@ class ChatRepositoryImpl @Inject constructor(
         return messageDao.getMessageByHistoryId(id)
     }
 
-    override suspend fun saveChatData(data: History) {
+    override suspend fun saveChatData(data: History): Long {
         return historyDao.insertHistory(data)
     }
 

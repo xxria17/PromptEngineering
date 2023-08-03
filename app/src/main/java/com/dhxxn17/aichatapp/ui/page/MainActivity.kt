@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -56,15 +57,12 @@ fun NavigationGraph(navController: NavHostController) {
             ChatListScreen(navController)
         }
         composable(
-            Screens.ChatScreen.route,
-            arguments = listOf(
-                navArgument(ID_ARGS) {
-                    type = NavType.StringType
-                }
-            )
-        ) { _backStackEntry ->
-            val id = _backStackEntry.arguments!!.getString(ID_ARGS)!!
-            ChatScreen(navController, id)
+            Screens.ChatScreen.route
+        ) {
+            val data = remember { navController.previousBackStackEntry?.savedStateHandle?.get<Int>("historyId")}
+            if (data != null) {
+                ChatScreen(navController, data)
+            }
         }
         composable(Screens.IntroScreen.route) {
             IntroScreen(navController)

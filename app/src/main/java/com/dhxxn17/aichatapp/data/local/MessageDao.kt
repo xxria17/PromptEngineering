@@ -15,5 +15,5 @@ interface MessageDao {
     suspend fun getMessageByHistoryId(id: Int): List<Message>
 
     @Query("DELETE FROM message_table WHERE historyId = :chatDataId")
-    fun deleteMessagesByChatDataID(chatDataId: Int)
+    suspend fun deleteMessagesByChatDataID(chatDataId: Int)
 }

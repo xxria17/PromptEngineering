@@ -8,11 +8,11 @@ import com.dhxxn17.aichatapp.data.entity.History
 @Dao
 interface HistoryDao {
     @Insert
-    suspend fun insertHistory(history: History)
+    suspend fun insertHistory(history: History): Long
 
     @Query("SELECT * FROM history_table")
     suspend fun getAllHistories(): List<History>
 
     @Query("DELETE FROM history_table WHERE id = :chatDataId")
-    fun deleteHistory(chatDataId: Int)
+    suspend fun deleteHistory(chatDataId: Int)
 }

@@ -14,6 +14,8 @@ class ChatListContract {
 
     sealed class ChatListUiAction: BaseUiAction {
         data class DeleteChatData(val id: Int): ChatListUiAction()
+
+        object Refresh: ChatListUiAction()
     }
 
     sealed class ChatListUiEffect: BaseUiEffect {

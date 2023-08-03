@@ -62,15 +62,15 @@ class ChatViewModel @Inject constructor(
         return ChatContract.ChatUiState(
             myInput = mutableChatStateOf(""),
             messageList = mutableChatStateListOf(emptyList()),
-            historyId = mutableChatStateOf(-1),
+            historyId = mutableChatStateOf(0),
             chatList = mutableChatStateListOf(emptyList())
         )
     }
 
     fun requestHistory(id: Int) {
+        // 이전 대화 내역 불러오기
         viewModelScope.launch {
             val messageList = chatRepository.getMessageList(id)
-
             state.historyId.sendState { id }
             state.messageList.sendState { messageList }
         }
@@ -79,12 +79,12 @@ class ChatViewModel @Inject constructor(
     private fun requestChat(message: String) {
         viewModelScope.launch {
 
-            if (state.historyId.value() == Int.MAX_VALUE) {
+            if (state.historyId.value() < 1) {
                 /* 첫 생성일 경우 */
                 val chatData = History(title = message)
-                chatRepository.saveChatData(chatData)
+                val chatId = chatRepository.saveChatData(chatData).toInt()
 
-                state.historyId.sendState { chatData.id }
+                state.historyId.sendState { chatId }
             }
 
             val userMessageData = Message(

@@ -1,5 +1,6 @@
 package com.dhxxn17.aichatapp.ui.page.chat
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -56,12 +57,13 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun ChatScreen(
     navController: NavController,
-    id: String
+    id: Int
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
 
-    if (id != "${Int.MAX_VALUE}") {
-        id.toIntOrNull()?.let { viewModel.requestHistory(it) }
+    Log.d("!!!!!!!!", "ChatScreen :${id}")
+    if (id != 0) {
+        viewModel.requestHistory(id)
     }
 
     var isShowDialog by remember { mutableStateOf(false) }

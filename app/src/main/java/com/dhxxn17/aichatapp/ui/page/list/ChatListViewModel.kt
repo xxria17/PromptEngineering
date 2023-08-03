@@ -48,6 +48,10 @@ class ChatListViewModel @Inject constructor(
             is ChatListContract.ChatListUiAction.DeleteChatData -> {
                 deleteChatData(action.id)
             }
+            is ChatListContract.ChatListUiAction.Refresh -> {
+                initialData()
+                requestChatList()
+            }
         }
     }
 

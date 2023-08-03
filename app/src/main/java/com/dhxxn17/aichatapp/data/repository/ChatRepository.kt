@@ -18,7 +18,7 @@ interface ChatRepository {
     suspend fun getMessageList(id: Int): List<Message>
 
     /* 대화 제목 내부 디비에 저장 */
-    suspend fun saveChatData(data: History)
+    suspend fun saveChatData(data: History): Long
 
     /* 대화 내역 내부 디비에 저장 */
     suspend fun saveMessage(data: Message)
