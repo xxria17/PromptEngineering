@@ -11,8 +11,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.dhxxn17.aichatapp.ui.page.chat.ChatScreen
 import com.dhxxn17.aichatapp.ui.page.intro.IntroScreen
 import com.dhxxn17.aichatapp.ui.page.list.ChatListScreen
@@ -34,14 +37,14 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AiChatApp() {
-
+    val navController = rememberNavController()
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { _innerPadding ->
         Box(
             modifier = Modifier.padding(_innerPadding)
         ) {
-            ChatScreen()
+            NavigationGraph(navController = navController)
         }
     }
 }
@@ -52,8 +55,16 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Screens.ChatListScreen.route) {
             ChatListScreen(navController)
         }
-        composable(Screens.ChatScreen.route) {
-            ChatScreen()
+        composable(
+            Screens.ChatScreen.route,
+            arguments = listOf(
+                navArgument(ID_ARGS) {
+                    type = NavType.StringType
+                }
+            )
+        ) { _backStackEntry ->
+            val id = _backStackEntry.arguments!!.getString(ID_ARGS)!!
+            ChatScreen(navController, id)
         }
         composable(Screens.IntroScreen.route) {
             IntroScreen(navController)
