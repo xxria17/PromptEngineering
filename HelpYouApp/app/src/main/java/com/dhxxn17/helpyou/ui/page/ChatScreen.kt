@@ -20,6 +20,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -33,12 +38,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dhxxn17.helpyou.data.model.ROLE
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen() {
 
     val viewModel: ChatViewModel = hiltViewModel()
+    var input by remember {
+        mutableStateOf("")
+    }
 
     Box(
         modifier = Modifier
@@ -74,15 +83,15 @@ fun ChatScreen() {
                 .padding(10.dp)
                 .align(Alignment.BottomCenter)
         ) {
-            viewModel.messageList.getValue(this).forEach { _chat ->
+            viewModel.messageList.value?.forEach { _chat ->
 
-                if (_chat.role == ROLE.USER.text) {
+                if (_chat.role == ROLE.USER) {
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            MyChatItem(message = _chat.content)
+                            MyChatItem(message = _chat.message)
                         }
                     }
                 } else {
@@ -91,7 +100,7 @@ fun ChatScreen() {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Start
                         ) {
-                            AiChatItem(message = _chat.content)
+                            AiChatItem(message = _chat.message)
                         }
                     }
                 }
@@ -100,14 +109,15 @@ fun ChatScreen() {
         }
 
         BasicTextField(
-            value = viewModel.state.myInput.getValue(this),
+            value = input,
             onValueChange = {
-
+                input = it
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(
                 onSend = {
-
+                    viewModel.sendChatMessage(input)
+                    input = ""
                 }
             ),
             modifier = Modifier
@@ -120,7 +130,7 @@ fun ChatScreen() {
             ),
             decorationBox = { _innerTextField ->
                 TextFieldDefaults.TextFieldDecorationBox(
-                    value = viewModel.state.myInput.getValue(this),
+                    value = input,
                     innerTextField = _innerTextField,
                     enabled = true,
                     singleLine = true,

@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
 
-    private val URL = "https://api.wit.ai/message"
+    private val URL = "https://api.wit.ai/"
 
     @Provides
     @Singleton

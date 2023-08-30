@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface NetworkApiService {
 
-    @GET("")
+    @GET("message")
     suspend fun sendChat(
         @Header("Authorization") apiKet: String = "",
         @Query(value = "v") date: String,
