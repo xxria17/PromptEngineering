@@ -8,6 +8,6 @@ AI를 이용한 챗봇 서비스 만들기
 - react를 이용한 dalie 클론
 
 - AIChatApp
-    -> OpenAI 사용한 chat gpt 안드로이드 앱
+  <br> -> OpenAI 사용한 chat gpt 안드로이드 앱
 - HelpYouApp
-    -> Wit.Ai 사용한 AI 챗봇 안드로이드 앱
+  <br> -> Wit.Ai 사용한 AI 챗봇 안드로이드 앱
