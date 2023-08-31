@@ -1,30 +1,13 @@
 # PromptEngineering 🤖
+AI를 이용한 챗봇 서비스 만들기
 
-With <b>OpenAI</b>
--> https://platform.openai.com
+## List 🗂
+- javascript를 이용한 chat gpt 클론
+- react를 이용한 chat gpt 클론
+- javascript를 이용한 ai 이미지 생성기 구현
+- react를 이용한 dalie 클론
 
-model : `GPT-3.5-turbo`
-
-<hr>
-
-<br>
-
-## Screenshots
-<img src ="https://github.com/xxria17/PromptEngineering/assets/41279544/5c311a79-bcbf-48f2-ac95-ffbfd583ef30" width="300" height="600"/>
-
-<img src ="https://github.com/xxria17/PromptEngineering/assets/41279544/0668e745-8c66-46d6-ae9c-9987e1423c54" width="300" height="600"/>
-
-<img src ="https://github.com/xxria17/PromptEngineering/assets/41279544/79994414-e296-43af-b4fa-fe53142122a1" width="300" height="600"/>
-
-
-<br>
-
-## Skills
-- Language : Kotlin
-- Jetpack Compose
-- JetPack Compose Navigation
-- Retrofit + OkHttp + Gson
-- Hilt
-- Coroutine + Flow
-- Room
-
+- AIChatApp
+    -> OpenAI 사용한 chat gpt 안드로이드 앱
+- HelpYouApp
+    -> Wit.Ai 사용한 AI 챗봇 안드로이드 앱
