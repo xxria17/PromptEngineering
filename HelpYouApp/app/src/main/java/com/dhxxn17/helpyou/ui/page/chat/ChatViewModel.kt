@@ -42,11 +42,23 @@ class ChatViewModel @Inject constructor(
 
             val response = chatRepository.sendChat(ChatRequest(message, date))
             val traitKey = response.intents[0].name
-            val responseList = response.traits[traitKey]
-            responseList?.forEach {
-                val aiResponse = it.value
+
+            if (response.traits.isNotEmpty()) {
+                val responseList = response.traits[traitKey]
+                responseList?.forEach {
+                    val aiResponse = it.value
+                    val replyMessage = Chat(
+                        aiResponse, ROLE.AI
+                    )
+                    val copyList = state.messageList.value().toMutableList()
+                    copyList.removeAt(state.messageList.value().size - 1)
+                    copyList.add(replyMessage)
+
+                    state.messageList.sendState { copyList }
+                }
+            } else {
                 val replyMessage = Chat(
-                    aiResponse, ROLE.AI
+                    "죄송합니다. 잘 모르겠습니다 🥺", ROLE.AI
                 )
                 val copyList = state.messageList.value().toMutableList()
                 copyList.removeAt(state.messageList.value().size - 1)
@@ -54,7 +66,6 @@ class ChatViewModel @Inject constructor(
 
                 state.messageList.sendState { copyList }
             }
-
         }
     }
 
