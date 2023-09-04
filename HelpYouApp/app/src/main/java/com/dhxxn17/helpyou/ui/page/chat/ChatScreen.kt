@@ -43,28 +43,8 @@ fun ChatScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color(0xffF4F6FD))
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .height(60.dp)
-                .padding(10.dp)
-                .align(Alignment.TopCenter),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Text(
-                text = "WitAI CHAT",
-                fontSize = 18.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(start = 30.dp)
-                    .weight(1f)
-            )
-        }
 
         LazyColumn(
             modifier = Modifier
@@ -139,7 +119,13 @@ fun ChatScreen() {
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
-                    )
+                    ),
+                    placeholder = {
+                        Text(
+                            "홍대 방탈출 추천해줘",
+                            color = Color.LightGray
+                        )
+                    }
                 )
             }
         )
@@ -154,16 +140,14 @@ fun AiChatItem(
         modifier = Modifier
             .padding(10.dp)
             .background(
-                color = Color(0xffE9EBEE), shape = RoundedCornerShape(
-                    bottomEnd = 30.dp, topEnd = 30.dp, topStart = 30.dp
-                )
+                color = Color.White, shape = RoundedCornerShape(30.dp)
             )
             .padding(10.dp)
     ) {
         Text(
             text = message,
             fontSize = 16.sp,
-            color = Color(0xff616771)
+            color = Color.Black
         )
     }
 }
@@ -176,14 +160,8 @@ fun MyChatItem(
         modifier = Modifier
             .padding(10.dp)
             .background(
-                brush = Brush.verticalGradient(
-                    listOf(
-                        Color(0xffF54EA2),
-                        Color(0xffFF7676)
-                    )
-                ), shape = RoundedCornerShape(
-                    topStart = 30.dp, topEnd = 30.dp, bottomStart = 30.dp
-                )
+                color = Color(0xffD37AA6),
+                shape = RoundedCornerShape(30.dp)
             )
             .padding(10.dp)
     ) {
