@@ -18,6 +18,8 @@ class ChatContract {
         data class InputMessage(val message: String): ChatUiAction()
 
         object RequestChat: ChatUiAction()
+
+        object DeleteAll: ChatUiAction()
     }
 
     sealed class ChatUiEffect: BaseUiEffect {

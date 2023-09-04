@@ -73,6 +73,10 @@ class ChatViewModel @Inject constructor(
         state.input.sendState { message }
     }
 
+    private fun deleteHistory() {
+        state.messageList.sendState { emptyList() }
+    }
+
     override fun loadData() {
 
     }
@@ -89,6 +93,10 @@ class ChatViewModel @Inject constructor(
            is ChatContract.ChatUiAction.RequestChat -> {
                sendChatMessage(state.input.value())
                state.input.sendState { "" }
+           }
+           is ChatContract.ChatUiAction.DeleteAll -> {
+               deleteHistory()
+               sendEffect(ChatContract.ChatUiEffect.ShowToast("삭제되었습니다 !"))
            }
        }
     }
