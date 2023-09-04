@@ -122,7 +122,7 @@ fun ChatScreen() {
                     ),
                     placeholder = {
                         Text(
-                            "홍대 방탈출 추천해줘",
+                            "노래 가사를 입력해 보세요 !",
                             color = Color.LightGray
                         )
                     }
