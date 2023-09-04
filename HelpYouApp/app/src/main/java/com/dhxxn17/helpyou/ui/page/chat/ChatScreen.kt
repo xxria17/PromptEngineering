@@ -22,13 +22,13 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,7 +71,12 @@ fun ChatScreen() {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Start
                         ) {
-                            AiChatItem(message = _chat.message)
+                            if (_chat.message.contains("<").not()) {
+                                LoadingChatItem(message = _chat.message)
+                            } else {
+                                AiChatItem(message = _chat.message)
+                            }
+                            
                         }
                     }
                 }
@@ -133,19 +138,50 @@ fun ChatScreen() {
 }
 
 @Composable
-fun AiChatItem(
+fun LoadingChatItem(
     message: String
 ) {
     Box(
         modifier = Modifier
             .padding(10.dp)
             .background(
-                color = Color.White, shape = RoundedCornerShape(30.dp)
+                color = Color.White, shape = RoundedCornerShape(15.dp)
             )
             .padding(10.dp)
     ) {
         Text(
             text = message,
+            fontSize = 16.sp,
+            color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun AiChatItem(
+    message: String
+) {
+    val titleIdx = message.indexOf("<")
+
+    Box(
+        modifier = Modifier
+            .padding(10.dp)
+            .background(
+                color = Color.White, shape = RoundedCornerShape(15.dp)
+            )
+            .padding(10.dp)
+    ) {
+        Text(
+            text = buildAnnotatedString {
+                append("${message.substring(0, titleIdx)}\n")
+                withStyle(
+                    SpanStyle(
+                        color = Color.LightGray
+                    )
+                ) {
+                    append(message.substring(titleIdx))
+                }
+            },
             fontSize = 16.sp,
             color = Color.Black
         )
@@ -161,7 +197,7 @@ fun MyChatItem(
             .padding(10.dp)
             .background(
                 color = Color(0xffD37AA6),
-                shape = RoundedCornerShape(30.dp)
+                shape = RoundedCornerShape(15.dp)
             )
             .padding(10.dp)
     ) {
