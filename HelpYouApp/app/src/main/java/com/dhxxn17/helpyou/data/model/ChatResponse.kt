@@ -3,7 +3,7 @@ package com.dhxxn17.helpyou.data.model
 data class ChatResponse(
     val intents: List<IntentData>,
     val text: String,
-    val traits: TraitsData
+    val traits: Map<String, List<DynamicData>>
 )
 
 data class IntentData(
@@ -12,11 +12,7 @@ data class IntentData(
     val name: String
 )
 
-data class TraitsData(
-    val greeting: List<GreetingData>
-)
-
-data class GreetingData(
+data class DynamicData(
     val confidence: Double,
     val id: Long,
     val value: String
