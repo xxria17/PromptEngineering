@@ -41,9 +41,8 @@ class ChatViewModel @Inject constructor(
             state.messageList.sendState { tempList }
 
             val response = chatRepository.sendChat(ChatRequest(message, date))
-            val traitKey = response.intents[0].name
-
             if (response.traits.isNotEmpty()) {
+                val traitKey = response.intents[0].name
                 val responseList = response.traits[traitKey]
                 responseList?.forEach {
                     val aiResponse = it.value
